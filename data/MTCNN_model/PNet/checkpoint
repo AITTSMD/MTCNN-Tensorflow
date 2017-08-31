@@ -1,0 +1,6 @@
+model_checkpoint_path: "PNet-16"
+all_model_checkpoint_paths: "PNet-12"
+all_model_checkpoint_paths: "PNet-13"
+all_model_checkpoint_paths: "PNet-14"
+all_model_checkpoint_paths: "PNet-15"
+all_model_checkpoint_paths: "PNet-16"
