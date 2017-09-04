@@ -106,7 +106,7 @@ def GenerateData(ftxt, output,net,argument=False):
                 resized_im = cv2.resize(cropped_im, (size, size))
                 #cal iou
                 iou = IoU(crop_box, np.expand_dims(gt_box,0))
-                if iou > -1:
+                if iou > 0.65:
                     F_imgs.append(resized_im)
                     #normalize
                     for index, one in enumerate(landmarkGt):
