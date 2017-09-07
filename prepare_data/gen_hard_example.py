@@ -161,7 +161,7 @@ def t_net(prefix, epoch,
     # 注意是在“test”模式下
     # imdb = IMDB("wider", image_set, root_path, dataset_path, 'test')
     # gt_imdb = imdb.gt_imdb()
-    test_data = TestLoader(data['images'][:100])
+    test_data = TestLoader(data['images'])
     #list
     detections,_ = mtcnn_detector.detect_face(test_data)
 
