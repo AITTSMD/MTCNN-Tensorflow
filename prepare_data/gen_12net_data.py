@@ -32,7 +32,7 @@ n_idx = 0 # negative
 d_idx = 0 # dont care
 idx = 0
 box_idx = 0
-for annotation in annotations[:20]:
+for annotation in annotations:
     annotation = annotation.strip().split(' ')
     #image path
     im_path = annotation[0]
