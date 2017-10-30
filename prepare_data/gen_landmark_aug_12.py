@@ -161,6 +161,13 @@ def GenerateData(ftxt, output,net,argument=False):
             #print F_landmarks.shape
             for i in range(len(F_imgs)):
                 print image_id
+
+                if np.sum(np.where(F_landmarks[i] <= 0, 1, 0)) > 0:
+                    continue
+
+                if np.sum(np.where(F_landmarks[i] >= 1, 1, 0)) > 0:
+                    continue
+
                 cv2.imwrite(join(dstdir,"%d.jpg" %(image_id)), F_imgs[i])
                 landmarks = map(str,list(F_landmarks[i]))
                 f.write(join(dstdir,"%d.jpg" %(image_id))+" -2 "+" ".join(landmarks)+"\n")
