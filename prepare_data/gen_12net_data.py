@@ -114,9 +114,9 @@ for annotation in annotations:
             delta_x = npr.randint(-w * 0.2, w * 0.2)
             delta_y = npr.randint(-h * 0.2, h * 0.2)
             #show this way: nx1 = max(x1+w/2-size/2+delta_x)
-            nx1 = max(x1 + w / 2 + delta_x - size / 2, 0)
+            nx1 = int(max(x1 + w / 2 + delta_x - size / 2, 0))
             #show this way: ny1 = max(y1+h/2-size/2+delta_y)
-            ny1 = max(y1 + h / 2 + delta_y - size / 2, 0)
+            ny1 = int(max(y1 + h / 2 + delta_y - size / 2, 0))
             nx2 = nx1 + size
             ny2 = ny1 + size
 
