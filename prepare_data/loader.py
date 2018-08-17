@@ -1,5 +1,5 @@
 import numpy as np
-import minibatch
+import prepare_data.minibatch
 import sys
 import cv2
 sys.path.append("../")

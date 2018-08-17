@@ -1,2 +1,2 @@
-model_checkpoint_path: "PNet-18"
-all_model_checkpoint_paths: "PNet-18"
+model_checkpoint_path: "PNet-30"
+all_model_checkpoint_paths: "PNet-30"

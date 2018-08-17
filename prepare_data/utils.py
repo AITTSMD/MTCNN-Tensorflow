@@ -6,7 +6,7 @@ def IoU(box, boxes):
     Parameters:
     ----------
     box: numpy array , shape (5, ): x1, y1, x2, y2, score
-        input box
+        predicted boxes
     boxes: numpy array, shape (n, 4): x1, y1, x2, y2
         input ground truth boxes
 

@@ -1,18 +1,17 @@
 # coding: utf-8
 import os
-import time
-import math
+import random
 from os.path import join, exists
+
 import cv2
 import numpy as np
-from BBox_utils import getDataFromTxt,processImage,shuffle_in_unison_scary,BBox
-from Landmark_utils import show_landmark,rotate,flip
-import random
-import tensorflow as tf
-import sys
 import numpy.random as npr
-dstdir = "48/train_ONet_landmark_aug"
-OUTPUT = '48'
+
+from prepare_data.BBox_utils import getDataFromTxt, BBox
+from prepare_data.Landmark_utils import rotate, flip
+
+dstdir = "../../DATA/48/train_ONet_landmark_aug"
+OUTPUT = '../../DATA/48'
 if not exists(OUTPUT): os.mkdir(OUTPUT)
 if not exists(dstdir): os.mkdir(dstdir)
 assert(exists(dstdir) and exists(OUTPUT))
@@ -52,7 +51,7 @@ def GenerateData(ftxt, output,net,argument=False):
     elif net == "ONet":
         size = 48
     else:
-        print 'Net type error'
+        print('Net type error')
         return
     image_id = 0
     f = open(join(OUTPUT,"landmark_%s_aug.txt" %(size)),'w')
@@ -81,7 +80,7 @@ def GenerateData(ftxt, output,net,argument=False):
         if argument:
             idx = idx + 1
             if idx % 100 == 0:
-                print idx, "images done"
+                print(idx, "images done")
             x1, y1, x2, y2 = gt_box
             #gt's width
             gt_w = x2 - x1 + 1
@@ -94,8 +93,8 @@ def GenerateData(ftxt, output,net,argument=False):
                 bbox_size = npr.randint(int(min(gt_w, gt_h) * 0.8), np.ceil(1.25 * max(gt_w, gt_h)))
                 delta_x = npr.randint(-gt_w * 0.2, gt_w * 0.2)
                 delta_y = npr.randint(-gt_h * 0.2, gt_h * 0.2)
-                nx1 = max(x1+gt_w/2-bbox_size/2+delta_x,0)
-                ny1 = max(y1+gt_h/2-bbox_size/2+delta_y,0)
+                nx1 = int(max(x1+gt_w/2-bbox_size/2+delta_x,0))
+                ny1 = int(max(y1+gt_h/2-bbox_size/2+delta_y,0))
                 
                 nx2 = nx1 + bbox_size
                 ny2 = ny1 + bbox_size
@@ -158,7 +157,7 @@ def GenerateData(ftxt, output,net,argument=False):
             #print F_imgs.shape
             #print F_landmarks.shape
             for i in range(len(F_imgs)):
-                print image_id
+                #print(image_id)
 
                 if np.sum(np.where(F_landmarks[i] <= 0, 1, 0)) > 0:
                     continue

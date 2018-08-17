@@ -1,5 +1,7 @@
 #coding:utf-8
 import sys
+
+
 sys.path.append("..")
 import argparse
 from train_models.mtcnn_model import P_Net, R_Net, O_Net
@@ -9,14 +11,14 @@ from Detection.fcn_detector import FcnDetector
 from Detection.MtcnnDetector import MtcnnDetector
 import cv2
 import os
-data_dir = '/home/thinkjoy/chen_obj/FDDB/FDDB'
-out_dir = '/home/thinkjoy/chen_obj/FDDB/FDDB/mtcnn_landmark_result'
+data_dir = '../../DATA/'
+out_dir = '../../DATA/FDDB_OUTPUT'
 
 def get_imdb_fddb(data_dir):
     imdb = []
     nfold = 10
-    for n in xrange(nfold):
-        file_name = 'FDDB-folds/FDDB-fold-%02d.txt' % (n + 1)
+    for n in range(nfold):
+        file_name = 'FDDB-folds/FDDB-folds/FDDB-fold-%02d.txt' % (n + 1)
         file_name = os.path.join(data_dir, file_name)
         fid = open(file_name, 'r')
         image_names = []
@@ -29,8 +31,8 @@ def get_imdb_fddb(data_dir):
 
 if __name__ == "__main__":
     test_mode = "ONet"
-    thresh = [0.6,0.15,0.05]
-    min_face_size = 24
+    thresh = [0.6,0.35,0.01]
+    min_face_size = 20
     stride = 2
     slide_window = False
     shuffle = False
@@ -64,15 +66,15 @@ if __name__ == "__main__":
     
     imdb = get_imdb_fddb(data_dir)
     nfold = len(imdb)    
-    for i in xrange(nfold):
+    for i in range(nfold):
         image_names = imdb[i]
-        print image_names
+        print(image_names)
         dets_file_name = os.path.join(out_dir, 'FDDB-det-fold-%02d.txt' % (i + 1))
         fid = open(dets_file_name,'w')
         sys.stdout.write('%s ' % (i + 1))
         image_names_abs = [os.path.join(data_dir,'originalPics',image_name+'.jpg') for image_name in image_names]
         test_data = TestLoader(image_names_abs)
-        all_boxes,_ = mtcnn_detector.detect_face(test_data, vis=vis)
+        all_boxes,_ = mtcnn_detector.detect_face(test_data)
         
         for idx,im_name in enumerate(image_names):
             img_path = os.path.join(data_dir,'originalPics',im_name+'.jpg')

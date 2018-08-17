@@ -6,18 +6,18 @@ import time
 
 import tensorflow as tf
 
-from tfrecord_utils import _process_image_withoutcoder, _convert_to_example_simple
+from prepare_data.tfrecord_utils import _process_image_withoutcoder, _convert_to_example_simple
 
 
 def _add_to_tfrecord(filename, image_example, tfrecord_writer):
     """Loads data from image and annotations files and add them to a TFRecord.
 
     Args:
-      dataset_dir: Dataset directory;
+      filename: Dataset directory;
       name: Image name to add to the TFRecord;
       tfrecord_writer: The TFRecord writer to use for writing.
     """
-    print('---', filename)
+    #print('---', filename)
     #imaga_data:array to string
     #height:original image's height
     #width:original image's width
@@ -51,14 +51,16 @@ def run(dataset_dir, net, output_dir, name='MTCNN', shuffling=False):
     # filenames = dataset['filename']
     if shuffling:
         tf_filename = tf_filename + '_shuffle'
-        #andom.seed(12345454)
+        #random.seed(12345454)
         random.shuffle(dataset)
     # Process dataset files.
     # write the data to tfrecord
-    print 'lala'
+    print('lala')
     with tf.python_io.TFRecordWriter(tf_filename) as tfrecord_writer:
         for i, image_example in enumerate(dataset):
-            sys.stdout.write('\r>> Converting image %d/%d' % (i + 1, len(dataset)))
+            if (i+1) % 100 == 0:
+                sys.stdout.write('\r>> %d/%d images has been converted' % (i+1, len(dataset)))
+                #sys.stdout.write('\r>> Converting image %d/%d' % (i + 1, len(dataset)))
             sys.stdout.flush()
             filename = image_example['filename']
             _add_to_tfrecord(filename, image_example, tfrecord_writer)
@@ -69,10 +71,12 @@ def run(dataset_dir, net, output_dir, name='MTCNN', shuffling=False):
 
 
 def get_dataset(dir, net='PNet'):
+    #get file name , label and anotation
     #item = 'imglists/PNet/train_%s_raw.txt' % net
     item = 'imglists/PNet/train_%s_landmark.txt' % net
     
     dataset_dir = os.path.join(dir, item)
+    #print(dataset_dir)
     imagelist = open(dataset_dir, 'r')
 
     dataset = []
@@ -81,6 +85,7 @@ def get_dataset(dir, net='PNet'):
         data_example = dict()
         bbox = dict()
         data_example['filename'] = info[0]
+        #print(data_example['filename'])
         data_example['label'] = int(info[1])
         bbox['xmin'] = 0
         bbox['ymin'] = 0
@@ -120,7 +125,7 @@ def get_dataset(dir, net='PNet'):
 
 
 if __name__ == '__main__':
-    dir = '.' 
+    dir = '../../DATA/'
     net = 'PNet'
-    output_directory = 'imglists/PNet'
+    output_directory = '../../DATA/imglists/PNet'
     run(dir, net, output_directory, shuffling=True)

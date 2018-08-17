@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as npr
 import os
 
-data_dir = '.'
+data_dir = '../../DATA/'
 #anno_file = os.path.join(data_dir, "anno.txt")
 
 size = 48
@@ -31,10 +31,10 @@ if not os.path.exists(dir_path):
     os.makedirs(dir_path)
 #write all data
 with open(os.path.join(dir_path, "train_%s_landmark.txt" % (net)), "w") as f:
-    print len(neg)
-    print len(pos)
-    print len(part)
-    print len(landmark)
+    print(len(neg))
+    print(len(pos))
+    print(len(part))
+    print(len(landmark))
     for i in np.arange(len(pos)):
         f.write(pos[i])
     for i in np.arange(len(neg)):

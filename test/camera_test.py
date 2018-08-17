@@ -40,8 +40,8 @@ while True:
     if ret:
         image = np.array(frame)
         boxes_c,landmarks = mtcnn_detector.detect(image)
-        
-        print landmarks.shape
+
+        print(landmarks.shape)
         t2 = cv2.getTickCount()
         t = (t2 - t1) / cv2.getTickFrequency()
         fps = 1.0 / t
@@ -64,7 +64,7 @@ while True:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     else:
-        print 'device not find'
+        print('device not find')
         break
 video_capture.release()
 cv2.destroyAllWindows()

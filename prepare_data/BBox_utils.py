@@ -38,8 +38,9 @@ def getDataFromTxt(txt, with_landmark=True):
             bbox: [left, right, top, bottom]
             landmark: [(x1, y1), (x2, y2), ...]
     """
-    #get dirname
+    #get current path
     dirname = os.path.dirname(txt)
+    print(dirname)
     with open(txt, 'r') as fd:
         lines = fd.readlines()
 
@@ -52,7 +53,7 @@ def getDataFromTxt(txt, with_landmark=True):
         #bbox = (components[1], components[2], components[3], components[4])
         bbox = (components[1], components[3], components[2], components[4])        
         bbox = [float(_) for _ in bbox]
-        bbox = map(int,bbox)
+        bbox = list(map(int,bbox))
         # landmark
         if not with_landmark:
             result.append((img_path, BBox(bbox)))
