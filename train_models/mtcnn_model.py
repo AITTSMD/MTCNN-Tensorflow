@@ -1,6 +1,7 @@
 #coding:utf-8
 import tensorflow as tf
 from tensorflow.contrib import slim
+from tensorflow.contrib.tensorboard.plugins import projector
 import numpy as np
 num_keep_radio = 0.7
 #define prelu
@@ -153,6 +154,20 @@ def cal_accuracy(cls_prob,label):
     return accuracy_op
 
 
+def _activation_summary(x):
+    '''
+    creates a summary provides histogram of activations
+    creates a summary that measures the sparsity of activations
+
+    :param x: Tensor
+    :return:
+    '''
+
+    tensor_name = x.op.name
+    print('load summary for : ',tensor_name)
+    tf.summary.histogram(tensor_name + '/activations',x)
+    #tf.summary.scalar(tensor_name + '/sparsity', tf.nn.zero_fraction(x))
+
 
 
 
@@ -168,26 +183,43 @@ def P_Net(inputs,label=None,bbox_target=None,landmark_target=None,training=True)
                         weights_regularizer=slim.l2_regularizer(0.0005), 
                         padding='valid'):
         print(inputs.get_shape())
+
+
         net = slim.conv2d(inputs, 10, 3, stride=1,scope='conv1')
+        _activation_summary(net)
         print(net.get_shape())
         net = slim.max_pool2d(net, kernel_size=[2,2], stride=2, scope='pool1', padding='SAME')
+        _activation_summary(net)
         print(net.get_shape())
         net = slim.conv2d(net,num_outputs=16,kernel_size=[3,3],stride=1,scope='conv2')
+        _activation_summary(net)
         print(net.get_shape())
         #
         net = slim.conv2d(net,num_outputs=32,kernel_size=[3,3],stride=1,scope='conv3')
+        _activation_summary(net)
         print(net.get_shape())
         #batch*H*W*2
         conv4_1 = slim.conv2d(net,num_outputs=2,kernel_size=[1,1],stride=1,scope='conv4_1',activation_fn=tf.nn.softmax)
+        _activation_summary(conv4_1)
         #conv4_1 = slim.conv2d(net,num_outputs=1,kernel_size=[1,1],stride=1,scope='conv4_1',activation_fn=tf.nn.sigmoid)
         
         print (conv4_1.get_shape())
         #batch*H*W*4
         bbox_pred = slim.conv2d(net,num_outputs=4,kernel_size=[1,1],stride=1,scope='conv4_2',activation_fn=None)
+        _activation_summary(bbox_pred)
         print (bbox_pred.get_shape())
         #batch*H*W*10
         landmark_pred = slim.conv2d(net,num_outputs=10,kernel_size=[1,1],stride=1,scope='conv4_3',activation_fn=None)
+        _activation_summary(landmark_pred)
         print (landmark_pred.get_shape())
+
+
+        # add projectors for visualization
+
+
+
+
+
         #cls_prob_original = conv4_1 
         #bbox_pred_original = bbox_pred
         if training:
@@ -205,7 +237,7 @@ def P_Net(inputs,label=None,bbox_target=None,landmark_target=None,training=True)
 
             accuracy = cal_accuracy(cls_prob,label)
             L2_loss = tf.add_n(slim.losses.get_regularization_losses())
-            return cls_loss,bbox_loss,landmark_loss,L2_loss,accuracy 
+            return cls_loss,bbox_loss,landmark_loss,L2_loss,accuracy
         #test
         else:
             #when test,batch_size = 1

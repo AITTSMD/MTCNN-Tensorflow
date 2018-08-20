@@ -14,7 +14,7 @@ from prepare_data.utils import IoU
 
 
 
-def GenerateData(ftxt, output,net,argument=False):
+def GenerateData(ftxt,data_path,net,argument=False):
     '''
 
     :param ftxt: name/path of the text file that contains image path,
@@ -39,14 +39,16 @@ def GenerateData(ftxt, output,net,argument=False):
     f = open(join(OUTPUT,"landmark_%s_aug.txt" %(size)),'w')
     #dstdir = "train_landmark_few"
     # get image path , bounding box, and landmarks from file 'ftxt'
-    data = getDataFromTxt(ftxt)
+    data = getDataFromTxt(ftxt,data_path=data_path)
     idx = 0
     #image_path bbox landmark(5*2)
     for (imgPath, bbox, landmarkGt) in data:
         #print imgPath
         F_imgs = []
-        F_landmarks = []        
+        F_landmarks = []
+        #print(imgPath)
         img = cv2.imread(imgPath)
+
         assert(img is not None)
         img_h,img_w,img_c = img.shape
         gt_box = np.array([bbox.left,bbox.top,bbox.right,bbox.bottom])
@@ -150,9 +152,9 @@ def GenerateData(ftxt, output,net,argument=False):
             #print F_imgs.shape
             #print F_landmarks.shape
             for i in range(len(F_imgs)):
-                if image_id % 100 == 0:
+                #if image_id % 100 == 0:
 
-                    print('image id : ', image_id)
+                    #print('image id : ', image_id)
 
                 if np.sum(np.where(F_landmarks[i] <= 0, 1, 0)) > 0:
                     continue
@@ -176,6 +178,7 @@ def GenerateData(ftxt, output,net,argument=False):
 if __name__ == '__main__':
     dstdir = "../../DATA/12/train_PNet_landmark_aug"
     OUTPUT = '../../DATA/12'
+    data_path = '../../DATA'
     if not exists(OUTPUT):
         os.mkdir(OUTPUT)
     if not exists(dstdir):
@@ -185,6 +188,6 @@ if __name__ == '__main__':
     net = "PNet"
     #the file contains the names of all the landmark training data
     train_txt = "trainImageList.txt"
-    imgs,landmarks = GenerateData(train_txt, OUTPUT,net,argument=True)
+    imgs,landmarks = GenerateData(train_txt,data_path,net,argument=True )
     
    

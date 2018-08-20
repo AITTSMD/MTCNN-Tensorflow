@@ -37,6 +37,7 @@ for annotation in annotations:
     annotation = annotation.strip().split(' ')
     #image path
     im_path = annotation[0]
+    #print(im_path)
     #boxed change to float type
     bbox = list(map(float, annotation[1:]))
     #gt
@@ -44,8 +45,8 @@ for annotation in annotations:
     #load image
     img = cv2.imread(os.path.join(im_dir, im_path + '.jpg'))
     idx += 1
-    if idx % 100 == 0:
-        print(idx, "images done")
+    #if idx % 100 == 0:
+        #print(idx, "images done")
 
     height, width, channel = img.shape
 
@@ -88,6 +89,7 @@ for annotation in annotations:
         w = x2 - x1 + 1
         #gt's height
         h = y2 - y1 + 1
+
 
         # ignore small faces and those faces has left-top corner out of the image
         # in case the ground truth boxes of small faces are not accurate
@@ -132,6 +134,10 @@ for annotation in annotations:
             size = npr.randint(int(min(w, h) * 0.8), np.ceil(1.25 * max(w, h)))
 
             # delta here is the offset of box center
+            if w<5:
+                print (w)
+                continue
+            #print (box)
             delta_x = npr.randint(-w * 0.2, w * 0.2)
             delta_y = npr.randint(-h * 0.2, h * 0.2)
 

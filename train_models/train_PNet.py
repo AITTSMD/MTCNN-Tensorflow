@@ -22,10 +22,10 @@ if __name__ == '__main__':
     model_name = 'MTCNN'
     #model_path = '../data/%s_model/PNet/PNet' % model_name
     #with landmark
-    model_path = '../data/%s_model/PNet_No_landmark/PNet' % model_name
+    model_path = '../data/%s_model/PNet_landmark/PNet' % model_name
             
     prefix = model_path
     end_epoch = 30
     display = 100
-    lr = 0.01
+    lr = 0.001
     train_PNet(base_dir, prefix, end_epoch, display, lr)
