@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as npr
 import os
 
-data_dir = '.'
+data_dir = '../../DATA'
 #anno_file = os.path.join(data_dir, "anno.txt")
 
 size = 12
@@ -37,6 +37,9 @@ with open(os.path.join(dir_path, "%s" %(net),"train_%s_landmark.txt" % (net)), "
     #base_num = min(nums)
     base_num = 250000
     print(len(neg), len(pos), len(part), base_num)
+
+    #shuffle the order of the initial data
+    #if negative examples are more than 750k then only choose 750k
     if len(neg) > base_num * 3:
         neg_keep = npr.choice(len(neg), size=base_num * 3, replace=True)
     else:
@@ -45,6 +48,7 @@ with open(os.path.join(dir_path, "%s" %(net),"train_%s_landmark.txt" % (net)), "
     part_keep = npr.choice(len(part), size=base_num, replace=True)
     print(len(neg_keep), len(pos_keep), len(part_keep))
 
+    # write the data according to the shuffled order
     for i in pos_keep:
         f.write(pos[i])
     for i in neg_keep:

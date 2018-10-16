@@ -1,20 +1,22 @@
 #coding:utf-8
 import sys
 #sys.path.append("../")
+from prepare_data.utils import convert_to_square
+
 sys.path.insert(0,'..')
 import numpy as np
 import argparse
 import os
-import cPickle as pickle
+import pickle as pickle
 import cv2
-from train_models.mtcnn_model import P_Net,R_Net
+from train_models.mtcnn_model import P_Net, R_Net, O_Net
 from train_models.MTCNN_config import config
-from loader import TestLoader
+from prepare_data.loader import TestLoader
 from Detection.detector import Detector
 from Detection.fcn_detector import FcnDetector
 from Detection.MtcnnDetector import MtcnnDetector
 from utils import *
-from data_utils import *
+from prepare_data.data_utils import *
 #net : 24(RNet)/48(ONet)
 #data: dict()
 def save_hard_example(net, data,save_path):
@@ -30,19 +32,19 @@ def save_hard_example(net, data,save_path):
 
     
     # save files
-    neg_label_file = "%d/neg_%d.txt" % (net, image_size)
+    neg_label_file = "../../DATA/no_LM%d/neg_%d.txt" % (net, image_size)
     neg_file = open(neg_label_file, 'w')
 
-    pos_label_file = "%d/pos_%d.txt" % (net, image_size)
+    pos_label_file = "../../DATA/no_LM%d/pos_%d.txt" % (net, image_size)
     pos_file = open(pos_label_file, 'w')
 
-    part_label_file = "%d/part_%d.txt" % (net, image_size)
+    part_label_file = "../../DATA/no_LM%d/part_%d.txt" % (net, image_size)
     part_file = open(part_label_file, 'w')
     #read detect result
     det_boxes = pickle.load(open(os.path.join(save_path, 'detections.pkl'), 'rb'))
     # print(len(det_boxes), num_of_images)
-    print len(det_boxes)
-    print num_of_images
+    print(len(det_boxes))
+    print(num_of_images)
     assert len(det_boxes) == num_of_images, "incorrect detections or ground truths"
 
     # index of neg, pos and part face, used as their image names
@@ -150,10 +152,10 @@ def t_net(prefix, epoch,
         ONet = Detector(O_Net, 48, batch_size[2], model_path[2])
         detectors[2] = ONet
         
-    basedir = '.'    
+    basedir = '../../DATA/'
     #anno_file
     filename = './wider_face_train_bbx_gt.txt'
-    #read annatation(type:dict)
+    #read anotation(type:dict), include 'images' and 'bboxes'
     data = read_annotation(basedir,filename)
     mtcnn_detector = MtcnnDetector(detectors=detectors, min_face_size=min_face_size,
                                    stride=stride, threshold=thresh, slide_window=slide_window)
@@ -161,10 +163,13 @@ def t_net(prefix, epoch,
     # 注意是在“test”模式下
     # imdb = IMDB("wider", image_set, root_path, dataset_path, 'test')
     # gt_imdb = imdb.gt_imdb()
+    print('load test data')
     test_data = TestLoader(data['images'])
+    print ('finish loading')
     #list
+    print ('start detecting....')
     detections,_ = mtcnn_detector.detect_face(test_data)
-
+    print ('finish detecting ')
     save_net = 'RNet'
     if test_mode == "PNet":
         save_net = "RNet"
@@ -172,7 +177,8 @@ def t_net(prefix, epoch,
         save_net = "ONet"
     #save detect result
     save_path = os.path.join(data_dir, save_net)
-    print save_path
+    print ('save_path is :')
+    print(save_path)
     if not os.path.exists(save_path):
         os.mkdir(save_path)
 
@@ -189,23 +195,22 @@ def parse_args():
     parser.add_argument('--test_mode', dest='test_mode', help='test net type, can be pnet, rnet or onet',
                         default='RNet', type=str)
     parser.add_argument('--prefix', dest='prefix', help='prefix of model name', nargs="+",
-                        default=['../data/MTCNN_model/PNet_landmark/PNet', '../data/MTCNN_model/RNet_landmark/RNet', '../data/MTCNN_model/ONet/ONet'],
+                        default=['../data/MTCNN_model/PNet_No_Landmark/PNet', '../data/MTCNN_model/RNet_No_Landmark/RNet', '../data/MTCNN_model/ONet_No_Landmark/ONet'],
                         type=str)
     parser.add_argument('--epoch', dest='epoch', help='epoch number of model to load', nargs="+",
-                        default=[18, 14, 22], type=int)
+                        default=[18, 14, 16], type=int)
     parser.add_argument('--batch_size', dest='batch_size', help='list of batch size used in prediction', nargs="+",
                         default=[2048, 256, 16], type=int)
     parser.add_argument('--thresh', dest='thresh', help='list of thresh for pnet, rnet, onet', nargs="+",
-                        default=[0.4, 0.05, 0.7], type=float)
+                        default=[0.3, 0.1, 0.7], type=float)
     parser.add_argument('--min_face', dest='min_face', help='minimum face size for detection',
-                        default=24, type=int)
+                        default=20, type=int)
     parser.add_argument('--stride', dest='stride', help='stride of sliding window',
                         default=2, type=int)
     parser.add_argument('--sw', dest='slide_window', help='use sliding window in pnet', action='store_true')
-    # parser.add_argument('--gpu', dest='gpu_id', help='GPU device to train with',
-    #                     default=0, type=int)
+    #parser.add_argument('--gpu', dest='gpu_id', help='GPU device to train with',default=0, type=int)
     parser.add_argument('--shuffle', dest='shuffle', help='shuffle data on visualization', action='store_true')
-    # parser.add_argument('--vis', dest='vis', help='turn on visualization', action='store_true')
+    parser.add_argument('--vis', dest='vis', help='turn on visualization', action='store_true')
     args = parser.parse_args()
     return args
 
@@ -213,13 +218,14 @@ def parse_args():
 if __name__ == '__main__':
 
     net = 'ONet'
+
     if net == "RNet":
         image_size = 24
     if net == "ONet":
         image_size = 48
 
-    base_dir = '../prepare_data/WIDER_train'
-    data_dir = '%s' % str(image_size)
+    base_dir = '../../DATA/WIDER_train'
+    data_dir = '../../DATA/no_LM%s' % str(image_size)
     
     neg_dir = get_path(data_dir, 'negative')
     pos_dir = get_path(data_dir, 'positive')
@@ -231,8 +237,8 @@ if __name__ == '__main__':
 
     args = parse_args()
 
-    print 'Called with argument:'
-    print args 
+    print('Called with argument:')
+    print(args)
     t_net(args.prefix,#model param's file
           args.epoch, #final epoches
           args.batch_size, #test batch_size 

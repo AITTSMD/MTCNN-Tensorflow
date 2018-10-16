@@ -153,7 +153,7 @@ def _process_image(filename, coder):
     # image_data = sess.run(tf.cast(resized_image, tf.uint8)).tobytes()
     # image = Image.open(filename)  # 图片的类型必须为array
     filename = filename + '.jpg'
-    print filename
+    print(filename)
     image = cv2.imread(filename)
     # image.show()
     # image_data = image.tobytes()
@@ -176,12 +176,16 @@ def _process_image(filename, coder):
 
     return image_data, height, width
 def _process_image_withoutcoder(filename):
+    #print(filename)
     image = cv2.imread(filename)
+    #print(type(image))
+    # transform data into string format
     image_data = image.tostring()
     assert len(image.shape) == 3
     height = image.shape[0]
     width = image.shape[1]
     assert image.shape[2] == 3
+    # return string data and initial height and width of the image
     return image_data, height, width
 
 

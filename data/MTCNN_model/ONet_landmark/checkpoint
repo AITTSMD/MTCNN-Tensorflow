@@ -1,2 +1,2 @@
-model_checkpoint_path: "ONet-16"
-all_model_checkpoint_paths: "ONet-16"
+model_checkpoint_path: "ONet-22"
+all_model_checkpoint_paths: "ONet-22"
