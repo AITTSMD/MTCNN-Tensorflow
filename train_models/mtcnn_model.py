@@ -226,7 +226,7 @@ def P_Net(inputs,
                               kernel_size=[1, 1],
                               stride=1,
                               scope='conv4_1',
-                              activation_fn=tf.nn.softmax)
+                              activation_fn=None)
         _activation_summary(conv4_1)
         #conv4_1 = slim.conv2d(net,num_outputs=1,kernel_size=[1,1],stride=1,scope='conv4_1',activation_fn=tf.nn.sigmoid)
 
